@@ -1,0 +1,24 @@
+{
+  "eslint.codeActionsOnSave.mode": "all",
+  "eslint.autoFixOnSave": true,
+  "eslint.packageManager": "yarn",
+  "eslint.format.enable": true,
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
