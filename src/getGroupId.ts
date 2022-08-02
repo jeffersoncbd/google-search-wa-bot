@@ -1,4 +1,6 @@
+import { CreateGroupWithANameThroughTheAPI } from './adapters/API/createGroup'
 import { openWaAPI } from './services/openWaAPI'
+import { CreateGroup } from './_domain/Entities/CreateGroup/Entity'
 
 export async function getGroupId(groupName: string) {
   try {
@@ -10,13 +12,10 @@ export async function getGroupId(groupName: string) {
     })
 
     if (group === undefined) {
-      const response = await openWaAPI.post('/createGroup', {
-        args: {
-          groupName,
-          contacts: []
-        }
-      })
-      return response.data.response.wid._serialized
+      const apiInterface = new CreateGroupWithANameThroughTheAPI()
+      const createGroup = new CreateGroup(apiInterface)
+      const result = await createGroup.create(groupName)
+      return result.id
     }
 
     return group.id
