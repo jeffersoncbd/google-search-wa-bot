@@ -23,9 +23,10 @@ async function root() {
 
   startServer(async (body) => {
     const messageTo: string = body.data.to
+    const messageFrom: string = body.data.from
     const messageBody: string = body.data.body
     if (
-      messageTo === groupId &&
+      (messageTo === groupId || messageFrom === groupId) &&
       messageBody.substring(0, botCommand.length) === botCommand
     ) {
       clearChat(groupId)
