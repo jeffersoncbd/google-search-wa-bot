@@ -11,4 +11,4 @@ if (!api_key) {
   throw new Error('Defina a variável OPEN_WA_API_KEY no arquivo .env')
 }
 
-export const openWAService = axios.create({ baseURL, headers: { api_key } })
+export const openWaAPI = axios.create({ baseURL, headers: { api_key } })

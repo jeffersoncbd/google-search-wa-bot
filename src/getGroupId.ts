@@ -1,8 +1,8 @@
-import { openWAService } from './openWAService'
+import { openWaAPI } from './services/openWaAPI'
 
 export async function getGroupId(groupName: string) {
   try {
-    const response = await openWAService.post('/getAllGroups', {
+    const response = await openWaAPI.post('/getAllGroups', {
       withNewMessagesOnly: false
     })
     const group = response.data.response.find((group: any) => {
@@ -10,7 +10,7 @@ export async function getGroupId(groupName: string) {
     })
 
     if (group === undefined) {
-      const response = await openWAService.post('/createGroup', {
+      const response = await openWaAPI.post('/createGroup', {
         args: {
           groupName,
           contacts: []
