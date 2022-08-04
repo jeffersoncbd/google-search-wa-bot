@@ -1,4 +1,4 @@
-import { CreateGroupWithANameThroughTheAPI } from './adapters/API/createGroup'
+import { CreateAGroupThroughEasyAPI } from './adapters/EasyAPI'
 import { openWaAPI } from './services/openWaAPI'
 import { CreateGroup } from './_domain/Entities/CreateGroup/Entity'
 
@@ -12,9 +12,9 @@ export async function getGroupId(groupName: string) {
     })
 
     if (group === undefined) {
-      const apiInterface = new CreateGroupWithANameThroughTheAPI()
+      const apiInterface = new CreateAGroupThroughEasyAPI()
       const createGroup = new CreateGroup(apiInterface)
-      const result = await createGroup.create(groupName)
+      const result = await createGroup.create({ name: groupName })
       return result.id
     }
 
