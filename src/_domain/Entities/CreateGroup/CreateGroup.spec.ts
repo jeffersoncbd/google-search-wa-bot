@@ -3,16 +3,16 @@ import { ValidationError } from '../_errors/Validation'
 import { CreateAGroupThroughOpenWA } from '../_interfaces'
 import { CreateGroup } from './Entity'
 
-class CreateGroupStub implements CreateAGroupThroughOpenWA {
+class CreateAGroupThroughStub implements CreateAGroupThroughOpenWA {
   async create() {
     return { id: 'anyId' }
   }
 }
 
 function makeSut() {
-  const groupStub = new CreateGroupStub()
-  const sut = new CreateGroup(groupStub)
-  return { sut, groupStub }
+  const openWAStub = new CreateAGroupThroughStub()
+  const sut = new CreateGroup(openWAStub)
+  return { sut, openWAStub }
 }
 
 describe(CreateGroup.name, () => {
@@ -33,17 +33,17 @@ describe(CreateGroup.name, () => {
   })
 
   test('deve criar um grupo na interface OpenWA usando a propriedade "name" recebida', async () => {
-    const { sut, groupStub } = makeSut()
-    const createSpy = jest.spyOn(groupStub, 'create')
+    const { sut, openWAStub } = makeSut()
+    const createSpy = jest.spyOn(openWAStub, 'create')
     const anyName = faker.random.words(3)
     await sut.create({ name: anyName })
     expect(createSpy).toHaveBeenCalledWith({ name: anyName })
   })
 
   test('deve retornar o resultado da interface OpenWA', async () => {
-    const { sut, groupStub } = makeSut()
+    const { sut, openWAStub } = makeSut()
     const mockedResult = { id: faker.database.mongodbObjectId() }
-    jest.spyOn(groupStub, 'create').mockResolvedValue(mockedResult)
+    jest.spyOn(openWAStub, 'create').mockResolvedValue(mockedResult)
     const result = await sut.create({ name: 'anyName' })
     expect(result).toEqual(mockedResult)
   })
