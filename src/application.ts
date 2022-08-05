@@ -19,35 +19,54 @@ const googleOptions = {
 }
 
 async function root() {
-  const groupId: string = await getGroupId(botGroupName)
+  try {
+    const groupId: string = await getGroupId(botGroupName)
 
-  startServer(async (body) => {
-    const messageTo: string = body.data.to
-    const messageFrom: string = body.data.from
-    const messageBody: string = body.data.body
-    if (
-      (messageTo === groupId || messageFrom === groupId) &&
-      messageBody.substring(0, botCommand.length) === botCommand
-    ) {
-      clearChat(groupId)
+    startServer(async (body) => {
+      const messageTo: string = body.data.to
+      const messageFrom: string = body.data.from
+      const messageBody: string = body.data.body
+      if (
+        (messageTo === groupId || messageFrom === groupId) &&
+        messageBody.substring(0, botCommand.length) === botCommand
+      ) {
+        clearChat(groupId)
 
-      const term = messageBody.substring(botCommand.length)
-      const response = await google.search(term, googleOptions)
+        const term = messageBody.substring(botCommand.length)
+        const response = await google.search(term, googleOptions)
 
-      response.results.reverse().forEach((result) => {
-        sendText(
-          groupId,
-          `*${result.title}*\n${result.url}\n_${result.description}_`
-        )
-      })
-      if (response.weather) {
-        sendText(
-          groupId,
-          `*${response.weather.location} - ${response.weather.temperature} ºC*\n_${response.weather.forecast}_\nChuva: ${response.weather.precipitation}\nUmidade: ${response.weather.humidity}\nVento: ${response.weather.wind}`
-        )
+        response.results.reverse().forEach((result) => {
+          sendText(
+            groupId,
+            `*${result.title}*\n${result.url}\n_${result.description}_`
+          )
+        })
+        if (response.weather) {
+          sendText(
+            groupId,
+            `*${response.weather.location} - ${response.weather.temperature} ºC*\n_${response.weather.forecast}_\nChuva: ${response.weather.precipitation}\nUmidade: ${response.weather.humidity}\nVento: ${response.weather.wind}`
+          )
+        }
       }
+    })
+  } catch (error: any) {
+    if (
+      error.code === 'ECONNREFUSED' &&
+      error.config.baseURL === process.env.OPEN_WA_URL
+    ) {
+      console.error(
+        `Não foi possível conectar com "${process.env.OPEN_WA_URL}", verifique se o servidor foi iniciado.`
+      )
+      return
     }
-  })
+    if (error.response.data.error === 'unauthorised') {
+      console.error(
+        'A API não permitiu o uso da API_KEY informada no arquivo .env'
+      )
+      return
+    }
+    console.error(error)
+  }
 }
 
 root()
