@@ -1,11 +1,12 @@
 import { openWaAPI } from '../../services/openWaAPI'
-import {
-  GetGroupIdThroughOpenWA,
-  Result
-} from '../../_domain/Entities/_interfaces'
+import * as interfaces from '../../_domain/entities/_interfaces'
 
-export class GetGroupIdThroughEasyAPI implements GetGroupIdThroughOpenWA {
-  async get(properties: { name: string }): Promise<Result | undefined> {
+export class GetGroupIdThroughEasyAPI
+  implements interfaces.GetGroupIdThroughOpenWA
+{
+  async get(properties: {
+    name: string
+  }): Promise<interfaces.Result | undefined> {
     const response = await openWaAPI.post('/getAllGroups', {
       withNewMessagesOnly: false
     })

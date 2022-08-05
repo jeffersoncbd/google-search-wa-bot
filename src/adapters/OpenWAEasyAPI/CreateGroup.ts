@@ -1,5 +1,5 @@
 import { openWaAPI } from '../../services/openWaAPI'
-import { CreateAGroupThroughOpenWA } from '../../_domain/Entities/_interfaces'
+import { CreateAGroupThroughOpenWA } from '../../_domain/entities/_interfaces'
 
 export class CreateAGroupThroughEasyAPI implements CreateAGroupThroughOpenWA {
   async create(properties: { name: string }) {

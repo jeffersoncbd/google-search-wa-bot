@@ -1,5 +1,4 @@
-import { CreateGroup } from './_domain/Entities/CreateGroup/Entity'
-import { GetGroupId } from './_domain/Entities/GetGroupId'
+import { CreateGroup, GetGroupId } from './_domain/entities'
 import * as OpenWAEasyAPI from './adapters/OpenWAEasyAPI'
 
 export async function getGroupId(groupName: string): Promise<string> {
