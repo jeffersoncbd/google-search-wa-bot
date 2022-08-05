@@ -11,7 +11,7 @@ export class GetGroupId {
   async get(properties: GetGroupIdProperties) {
     if (!properties) {
       throw new ValidationError(
-        'É necessário informar as propriedades necessárias para encontrar o ID do grupo'
+        'Deve ser informado as propriedades necessárias para encontrar o ID de um grupo'
       )
     }
     if (!properties.name || properties.name.length < 4) {

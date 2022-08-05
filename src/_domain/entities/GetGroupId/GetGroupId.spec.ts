@@ -24,7 +24,7 @@ describe(GetGroupId.name, () => {
     await expect(
       sut.get(undefined as unknown as GetGroupIdProperties)
     ).rejects.toThrow(
-      'É necessário informar as propriedades necessárias para encontrar o ID do grupo'
+      'Deve ser informado as propriedades necessárias para encontrar o ID de um grupo'
     )
   })
 
