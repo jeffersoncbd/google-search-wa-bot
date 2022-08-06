@@ -1,10 +1,10 @@
 import 'dotenv/config'
 import google from 'googlethis'
 
-import { getGroupId } from './getGroupId'
 import { clearChat } from './clearChat'
 import { startServer } from './Server'
 import { sendText } from './sendText'
+import { makeFindOrCreateGroupByName } from './factories/usecases/findOrCreateGroupByName'
 
 const botGroupName = process.env.BOT_GROUP_NAME || 'google'
 const botCommand = process.env.BOT_COMMAND || '.gs'
@@ -18,9 +18,11 @@ const googleOptions = {
   }
 }
 
+const group = makeFindOrCreateGroupByName()
+
 async function root() {
   try {
-    const groupId: string = await getGroupId(botGroupName)
+    const groupId: string = await group.findOrCreateWith(botGroupName)
 
     startServer(async (body) => {
       const messageTo: string = body.data.to
