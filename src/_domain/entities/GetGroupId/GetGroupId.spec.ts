@@ -1,13 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { ValidationError } from '../_errors/Validation'
-import { GetGroupIdThroughOpenWA, Result } from '../_interfaces'
+import { GetGroupIdThroughStub } from '../_interfaces'
 import { GetGroupId, GetGroupIdProperties } from './Entity'
-
-class GetGroupIdThroughStub implements GetGroupIdThroughOpenWA {
-  async get(): Promise<Result | undefined> {
-    return { id: 'anyId' }
-  }
-}
 
 function makeSut() {
   const openWAStub = new GetGroupIdThroughStub()

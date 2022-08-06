@@ -1,13 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { ValidationError } from '../_errors/Validation'
-import { CreateAGroupThroughOpenWA } from '../_interfaces'
+import { CreateAGroupThroughStub } from '../_interfaces'
 import { CreateGroup, CreateGroupProperties } from './Entity'
-
-class CreateAGroupThroughStub implements CreateAGroupThroughOpenWA {
-  async create() {
-    return { id: 'anyId' }
-  }
-}
 
 function makeSut() {
   const openWAStub = new CreateAGroupThroughStub()
