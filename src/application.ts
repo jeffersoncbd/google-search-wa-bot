@@ -1,28 +1,24 @@
 import 'dotenv/config'
-import google from 'googlethis'
 
 import { Server } from './services/Server'
 import { sendText } from './sendText'
 import { makeFindOrCreateGroupByName } from './factories/usecases/findOrCreateGroupByName'
 import { ClearChatThroughEasyAPI } from './adapters/OpenWAEasyAPI/ClearChat'
 import { ClearChat } from './_domain/entities/ClearChat'
+import { GoogleSearchEngine } from './adapters/GoogleSearchEngine'
+import { Searcher } from './_domain/entities/Searcher'
 
 const botGroupName = process.env.BOT_GROUP_NAME || 'google'
 const botCommand = process.env.BOT_COMMAND || '.gs'
-const googleOptions = {
-  page: 0,
-  safe: false,
-  additional_params: {
-    hl: 'pt',
-    lr: 'lang_pt',
-    cr: 'BR'
-  }
-}
 
 const group = makeFindOrCreateGroupByName()
 const server = new Server()
+
 const clearChatThroughEasyAPI = new ClearChatThroughEasyAPI()
 const clearChat = new ClearChat(clearChatThroughEasyAPI)
+
+const googleSearchEngine = new GoogleSearchEngine()
+const searcher = new Searcher(googleSearchEngine)
 
 interface Data {
   groupId: string
@@ -40,18 +36,12 @@ async function processMessage(data: Data) {
     clearChat.clear({ id: groupId })
 
     const term = messageBody.substring(botCommand.length)
-    const response = await google.search(term, googleOptions)
+    const results = await searcher.search({ term })
 
-    response.results.reverse().forEach((result) => {
-      sendText(
+    for (const result of results) {
+      await sendText(
         groupId,
-        `*${result.title}*\n${result.url}\n_${result.description}_`
-      )
-    })
-    if (response.weather) {
-      sendText(
-        groupId,
-        `*${response.weather.location} - ${response.weather.temperature} ºC*\n_${response.weather.forecast}_\nChuva: ${response.weather.precipitation}\nUmidade: ${response.weather.humidity}\nVento: ${response.weather.wind}`
+        `*${result.title}*\n${result.link}\n_${result.description}_`
       )
     }
   }
