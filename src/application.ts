@@ -2,7 +2,7 @@ import 'dotenv/config'
 import google from 'googlethis'
 
 import { clearChat } from './clearChat'
-import { startServer } from './Server'
+import { Server } from './services/Server'
 import { sendText } from './sendText'
 import { makeFindOrCreateGroupByName } from './factories/usecases/findOrCreateGroupByName'
 
@@ -19,37 +19,53 @@ const googleOptions = {
 }
 
 const group = makeFindOrCreateGroupByName()
+const server = new Server()
+
+interface Data {
+  groupId: string
+  messageTo: string
+  messageFrom: string
+  messageBody: string
+}
+
+async function processMessage(data: Data) {
+  const { groupId, messageTo, messageFrom, messageBody } = data
+  if (
+    (messageTo === groupId || messageFrom === groupId) &&
+    messageBody.substring(0, botCommand.length) === botCommand
+  ) {
+    clearChat(groupId)
+
+    const term = messageBody.substring(botCommand.length)
+    const response = await google.search(term, googleOptions)
+
+    response.results.reverse().forEach((result) => {
+      sendText(
+        groupId,
+        `*${result.title}*\n${result.url}\n_${result.description}_`
+      )
+    })
+    if (response.weather) {
+      sendText(
+        groupId,
+        `*${response.weather.location} - ${response.weather.temperature} ºC*\n_${response.weather.forecast}_\nChuva: ${response.weather.precipitation}\nUmidade: ${response.weather.humidity}\nVento: ${response.weather.wind}`
+      )
+    }
+  }
+}
 
 async function root() {
   try {
     const groupId: string = await group.findOrCreateWith(botGroupName)
 
-    startServer(async (body) => {
-      const messageTo: string = body.data.to
-      const messageFrom: string = body.data.from
-      const messageBody: string = body.data.body
-      if (
-        (messageTo === groupId || messageFrom === groupId) &&
-        messageBody.substring(0, botCommand.length) === botCommand
-      ) {
-        clearChat(groupId)
-
-        const term = messageBody.substring(botCommand.length)
-        const response = await google.search(term, googleOptions)
-
-        response.results.reverse().forEach((result) => {
-          sendText(
-            groupId,
-            `*${result.title}*\n${result.url}\n_${result.description}_`
-          )
-        })
-        if (response.weather) {
-          sendText(
-            groupId,
-            `*${response.weather.location} - ${response.weather.temperature} ºC*\n_${response.weather.forecast}_\nChuva: ${response.weather.precipitation}\nUmidade: ${response.weather.humidity}\nVento: ${response.weather.wind}`
-          )
-        }
-      }
+    server.addRequestHandler((request) => {
+      processMessage({
+        groupId,
+        messageTo: request.body.data.to,
+        messageFrom: request.body.data.from,
+        messageBody: request.body.data.body
+      })
+      return { statusCode: 200 }
     })
   } catch (error: any) {
     if (
