@@ -1,10 +1,11 @@
 import 'dotenv/config'
 import google from 'googlethis'
 
-import { clearChat } from './clearChat'
 import { Server } from './services/Server'
 import { sendText } from './sendText'
 import { makeFindOrCreateGroupByName } from './factories/usecases/findOrCreateGroupByName'
+import { ClearChatThroughEasyAPI } from './adapters/OpenWAEasyAPI/ClearChat'
+import { ClearChat } from './_domain/entities/ClearChat'
 
 const botGroupName = process.env.BOT_GROUP_NAME || 'google'
 const botCommand = process.env.BOT_COMMAND || '.gs'
@@ -20,6 +21,8 @@ const googleOptions = {
 
 const group = makeFindOrCreateGroupByName()
 const server = new Server()
+const clearChatThroughEasyAPI = new ClearChatThroughEasyAPI()
+const clearChat = new ClearChat(clearChatThroughEasyAPI)
 
 interface Data {
   groupId: string
@@ -34,7 +37,7 @@ async function processMessage(data: Data) {
     (messageTo === groupId || messageFrom === groupId) &&
     messageBody.substring(0, botCommand.length) === botCommand
   ) {
-    clearChat(groupId)
+    clearChat.clear({ id: groupId })
 
     const term = messageBody.substring(botCommand.length)
     const response = await google.search(term, googleOptions)
