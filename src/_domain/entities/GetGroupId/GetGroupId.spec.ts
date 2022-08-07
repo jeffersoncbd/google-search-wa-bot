@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { ValidationError } from '../_errors/Validation'
 import { GetGroupIdThroughStub } from '../_interfaces'
-import { GetGroupId, GetGroupIdProperties } from './Entity'
+import { GetGroupId } from './Entity'
 
 function makeSut() {
   const openWAStub = new GetGroupIdThroughStub()
@@ -10,18 +10,6 @@ function makeSut() {
 }
 
 describe(GetGroupId.name, () => {
-  test('deve lançar "ValidationError" se "properties" não for informado', async () => {
-    const { sut } = makeSut()
-    await expect(
-      sut.get(undefined as unknown as GetGroupIdProperties)
-    ).rejects.toThrow(ValidationError)
-    await expect(
-      sut.get(undefined as unknown as GetGroupIdProperties)
-    ).rejects.toThrow(
-      'Deve ser informado as propriedades necessárias para encontrar o ID de um grupo'
-    )
-  })
-
   test('deve lançar "ValidationError" se a propriedade "name" não for informada', async () => {
     const { sut } = makeSut()
     await expect(sut.get({ name: '' })).rejects.toThrow(ValidationError)

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { ValidationError } from '../_errors/Validation'
 import { CreateAGroupThroughStub } from '../_interfaces'
-import { CreateGroup, CreateGroupProperties } from './Entity'
+import { CreateGroup } from './Entity'
 
 function makeSut() {
   const openWAStub = new CreateAGroupThroughStub()
@@ -10,18 +10,6 @@ function makeSut() {
 }
 
 describe(CreateGroup.name, () => {
-  test('deve lançar "ValidationError" se "properties" não for informado', async () => {
-    const { sut } = makeSut()
-    await expect(
-      sut.create(undefined as unknown as CreateGroupProperties)
-    ).rejects.toThrow(ValidationError)
-    await expect(
-      sut.create(undefined as unknown as CreateGroupProperties)
-    ).rejects.toThrow(
-      'Deve ser informado as propriedades necessárias para criar um grupo'
-    )
-  })
-
   test('deve lançar "ValidationError" caso a propriedade "name" esteja vazia', async () => {
     const { sut } = makeSut()
     await expect(sut.create({ name: '' })).rejects.toThrow(ValidationError)

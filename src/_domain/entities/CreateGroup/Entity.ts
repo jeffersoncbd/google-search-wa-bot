@@ -1,7 +1,7 @@
 import { ValidationError } from '../_errors/Validation'
 import { CreateAGroupThroughOpenWA } from '../_interfaces'
 
-export interface CreateGroupProperties {
+interface CreateGroupProperties {
   name: string
 }
 

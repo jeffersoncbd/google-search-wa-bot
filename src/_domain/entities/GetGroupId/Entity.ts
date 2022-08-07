@@ -1,7 +1,7 @@
 import { ValidationError } from '../_errors/Validation'
 import { GetGroupIdThroughOpenWA } from '../_interfaces'
 
-export interface GetGroupIdProperties {
+interface GetGroupIdProperties {
   name: string
 }
 
