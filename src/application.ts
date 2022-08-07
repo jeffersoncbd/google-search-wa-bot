@@ -65,8 +65,9 @@ async function root() {
         messageFrom: request.body.data.from,
         messageBody: request.body.data.body
       })
-      return { statusCode: 200 }
     })
+
+    server.start()
   } catch (error: any) {
     if (
       error.code === 'ECONNREFUSED' &&
