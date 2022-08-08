@@ -14,6 +14,11 @@ export interface ClearChatThroughOpenWA {
   clear(properties: { id: string }): Promise<void>
 }
 
+type SendMessageProperties = { chatId: string; message: string }
+export interface SendMessageThroughOpenWA {
+  send(properties: SendMessageProperties): Promise<void>
+}
+
 export class CreateAGroupThroughStub implements CreateAGroupThroughOpenWA {
   async create() {
     return { id: 'anyId' }
@@ -28,4 +33,10 @@ export class GetGroupIdThroughStub implements GetGroupIdThroughOpenWA {
 
 export class ClearChatThroughStub implements ClearChatThroughOpenWA {
   async clear(): Promise<void> {}
+}
+
+export class SendMessageThroughStub implements SendMessageThroughOpenWA {
+  async send(): Promise<void> {
+    return undefined
+  }
 }

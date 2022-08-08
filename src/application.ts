@@ -1,12 +1,15 @@
 import 'dotenv/config'
 
 import { Server } from './services/Server'
-import { sendText } from './sendText'
 import { makeFindOrCreateGroupByName } from './factories/usecases/findOrCreateGroupByName'
-import { ClearChatThroughEasyAPI } from './adapters/OpenWAEasyAPI/ClearChat'
+import {
+  ClearChatThroughEasyAPI,
+  SendMessageThroughEasyAPI
+} from './adapters/OpenWAEasyAPI'
 import { ClearChat } from './_domain/entities/ClearChat'
 import { GoogleSearchEngine } from './adapters/GoogleSearchEngine'
 import { Searcher } from './_domain/entities/Searcher'
+import { SendMessage } from './_domain/entities/SendMessage'
 
 const botGroupName = process.env.BOT_GROUP_NAME || 'google'
 const botCommand = process.env.BOT_COMMAND || '.gs'
@@ -19,6 +22,9 @@ const clearChat = new ClearChat(clearChatThroughEasyAPI)
 
 const googleSearchEngine = new GoogleSearchEngine()
 const searcher = new Searcher(googleSearchEngine)
+
+const sendMessageThroughEasyAPI = new SendMessageThroughEasyAPI()
+const sendMessage = new SendMessage(sendMessageThroughEasyAPI)
 
 interface Data {
   groupId: string
@@ -39,10 +45,10 @@ async function processMessage(data: Data) {
     const results = await searcher.search({ term })
 
     for (const result of results) {
-      await sendText(
-        groupId,
-        `*${result.title}*\n${result.link}\n_${result.description}_`
-      )
+      await sendMessage.send({
+        chatId: groupId,
+        message: `*${result.title}*\n${result.link}\n_${result.description}_`
+      })
     }
   }
 }
