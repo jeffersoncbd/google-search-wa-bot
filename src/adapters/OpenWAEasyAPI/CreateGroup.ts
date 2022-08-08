@@ -1,4 +1,5 @@
 import { openWaAPI } from '../../services/openWaAPI'
+import { ValidationError } from '../../_domain/entities/_errors'
 import { CreateAGroupThroughOpenWA } from '../../_domain/entities/_interfaces'
 
 export class CreateAGroupThroughEasyAPI implements CreateAGroupThroughOpenWA {
@@ -9,6 +10,9 @@ export class CreateAGroupThroughEasyAPI implements CreateAGroupThroughOpenWA {
         contacts: []
       }
     })
+    if (!response.data.success) {
+      throw new ValidationError(response.data.response.split(': ')[1])
+    }
     return { id: response.data.response.wid._serialized }
   }
 }
