@@ -39,15 +39,24 @@ async function processMessage(data: Data) {
     (messageTo === groupId || messageFrom === groupId) &&
     messageBody.substring(0, botCommand.length) === botCommand
   ) {
-    clearChat.clear({ id: groupId })
+    try {
+      const cleaningPromise = clearChat.clear({ id: groupId })
 
-    const term = messageBody.substring(botCommand.length)
-    const results = await searcher.search({ term })
+      const term = messageBody.substring(botCommand.length)
+      const resultsPromise = searcher.search({ term })
 
-    for (const result of results) {
+      const [, results] = await Promise.all([cleaningPromise, resultsPromise])
+
+      for (const result of results) {
+        await sendMessage.send({
+          chatId: groupId,
+          message: `*${result.title}*\n${result.link}\n_${result.description}_`
+        })
+      }
+    } catch (error: any) {
       await sendMessage.send({
         chatId: groupId,
-        message: `*${result.title}*\n${result.link}\n_${result.description}_`
+        message: error.message
       })
     }
   }
