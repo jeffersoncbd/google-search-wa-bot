@@ -11,7 +11,9 @@ const googleOptions = {
     hl: 'pt',
     lr: 'lang_pt',
     cr: 'BR'
-  }
+  },
+  match_all_images: false,
+  ris: false
 }
 
 export class GoogleSearchEngine implements SearchEngine {
@@ -19,7 +21,7 @@ export class GoogleSearchEngine implements SearchEngine {
     const response = await google.search(properties.term, googleOptions)
     return response.results.reverse().map((result) => ({
       title: result.title,
-      link: result.url,
+      url: result.url,
       description: result.description
     }))
   }
