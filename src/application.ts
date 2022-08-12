@@ -50,7 +50,7 @@ async function processMessage(data: Data) {
       for (const result of results) {
         await sendMessage.send({
           chatId: groupId,
-          message: `*${result.title}*\n${result.link}\n_${result.description}_`
+          message: `*${result.title}*\n${result.url}\n_${result.description}_`
         })
       }
     } catch (error: any) {

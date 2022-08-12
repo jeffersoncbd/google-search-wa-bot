@@ -33,7 +33,7 @@ describe(Searcher.name, () => {
     const { sut, engineStub } = makeSut()
     const fakeResult: SearchEngineResult = {
       title: faker.random.words(2),
-      link: faker.internet.domainName(),
+      url: faker.internet.domainName(),
       description: faker.lorem.paragraph()
     }
     jest.spyOn(engineStub, 'search').mockResolvedValue([fakeResult])

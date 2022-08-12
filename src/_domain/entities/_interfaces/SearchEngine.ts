@@ -1,6 +1,6 @@
 export interface SearchEngineResult {
   title: string
-  link: string
+  url: string
   description: string
 }
 
