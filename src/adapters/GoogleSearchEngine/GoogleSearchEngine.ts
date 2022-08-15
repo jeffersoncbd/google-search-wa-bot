@@ -2,7 +2,7 @@ import google from 'googlethis'
 import {
   SearchEngine,
   SearchEngineResult
-} from '../_domain/entities/_interfaces/SearchEngine'
+} from '../../_domain/entities/_interfaces/SearchEngine'
 
 const googleOptions = {
   page: 0,
