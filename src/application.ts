@@ -2,26 +2,15 @@ import 'dotenv/config'
 
 import { Server } from './services/Server'
 import { makeFindOrCreateGroupByName } from './factories/usecases/findOrCreateGroupByName'
-import {
-  ClearChatThroughEasyAPI,
-  SendMessageThroughEasyAPI
-} from './adapters/OpenWAEasyAPI'
-import { ClearChat } from './_domain/entities/ClearChat'
-import { GoogleSearchEngine } from './adapters/GoogleSearchEngine'
-import { Searcher } from './_domain/entities/Searcher'
+import { SendMessageThroughEasyAPI } from './adapters/OpenWAEasyAPI'
 import { SendMessage } from './_domain/entities/SendMessage'
+import { makeProcessTheSearch } from './factories/usecases/processTheSearch'
 
 const botGroupName = process.env.BOT_GROUP_NAME || 'google'
 const botCommand = process.env.BOT_COMMAND || '.gs'
 
 const group = makeFindOrCreateGroupByName()
 const server = new Server()
-
-const clearChatThroughEasyAPI = new ClearChatThroughEasyAPI()
-const clearChat = new ClearChat(clearChatThroughEasyAPI)
-
-const googleSearchEngine = new GoogleSearchEngine()
-const searcher = new Searcher(googleSearchEngine)
 
 const sendMessageThroughEasyAPI = new SendMessageThroughEasyAPI()
 const sendMessage = new SendMessage(sendMessageThroughEasyAPI)
@@ -33,6 +22,8 @@ interface Data {
   messageBody: string
 }
 
+const messageProcessor = makeProcessTheSearch()
+
 async function processMessage(data: Data) {
   const { groupId, messageTo, messageFrom, messageBody } = data
   if (
@@ -40,19 +31,9 @@ async function processMessage(data: Data) {
     messageBody.substring(0, botCommand.length) === botCommand
   ) {
     try {
-      const cleaningPromise = clearChat.clear({ id: groupId })
-
       const term = messageBody.substring(botCommand.length)
-      const resultsPromise = searcher.search({ term })
 
-      const [, results] = await Promise.all([cleaningPromise, resultsPromise])
-
-      for (const result of results) {
-        await sendMessage.send({
-          chatId: groupId,
-          message: `*${result.title}*\n${result.url}\n_${result.description}_`
-        })
-      }
+      await messageProcessor.process({ chatId: groupId, termToSearch: term })
     } catch (error: any) {
       await sendMessage.send({
         chatId: groupId,
